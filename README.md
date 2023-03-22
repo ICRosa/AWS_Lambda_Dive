@@ -1,2 +1,9 @@
 # AWS_Lambda_Dive
-Repositório contendo uma série de aplicações e exemplos para AWS lambda
+
+
+---
+
+As funções anteriormente criadas foram unidas em uma pipeline Completa usando Step functions
+
+Pipeline Diagram
+<img src="./Diagrams/GHA Analisis Pipeline.jpg">
