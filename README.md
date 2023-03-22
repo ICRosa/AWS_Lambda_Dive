@@ -5,5 +5,5 @@
 
 As funções anteriormente criadas foram unidas em uma pipeline Completa usando Step functions
 
-![Alt text](./Diagrams/GHA Analisis Pipeline.svg)
+Pipeline Diagram
 <img src="./Diagrams/GHA Analisis Pipeline.svg">
