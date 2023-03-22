@@ -6,27 +6,26 @@ registra o processo em uma tabela Dynamo
     • requests e pytz
 
 '''
-
 import boto3
 import requests
-from datetime import datetime
+from datetime import datetime, timedelta
 import os
 import pytz
+
 
 def lambda_handler(event, context):
 
     #Definindo variaveis gerais
-    tz = pytz.timezone('Brazil/East')
+    tz = pytz.timezone('UTC') #Garante a timezone UTC
     if os.name == 'nt':
-        time_string = datetime.strftime(datetime.now(tz=tz), "%Y-%m-%d-%#H")
-        job_id = int(datetime.strftime(datetime.now(tz=tz), "%Y%m%d%H%M"))
+        time_string = datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y-%m-%d-%#H")
+        job_id = int(datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y%m%d%H"))
     else:
-        time_string = datetime.strftime(datetime.now(tz=tz), "%Y-%m-%d-%-H")
-        job_id = int(datetime.strftime(datetime.now(tz=tz), "%Y%m%d%H%M"))
+        time_string = datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y-%m-%d-%-H")
+        job_id = int(datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y%m%d%H"))
 
 
     file_name = f'{time_string}.json.gz'
-    print(file_name)
     bucket_name = 'raw-arch-entry'
 
     #Função coleta da fonte 
@@ -53,14 +52,17 @@ def lambda_handler(event, context):
             'job_type': 'ghactivity_ingest',
             'job_run_time': time_string,
              'job_run_bookmark_details': {
-            'processed_file_name': file_name}})
+                'processed_file_name': file_name
+             }})
 
     arch = colect()
     upload_res = ingest()
     register()
 
     return {
-      'last_run_file_name': f's3://{bucket_name}/ghactivity/{file_name}',
+      'job_id': f"{job_id}",
+      'Bucket': bucket_name,
+      'Key':f'ghactivity/{file_name}',
+      'time_string': time_string,
       'status_code': upload_res['ResponseMetadata']['HTTPStatusCode']
     }
-

@@ -1,0 +1,171 @@
+{
+    "Comment": "A description of my state machine",
+    "StartAt": "GHA Ingest",
+    "States": {
+      "Register Query": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::dynamodb:updateItem",
+        "Parameters": {
+          "TableName": "jobs",
+          "Key": {
+            "job_id": {
+              "N.$": "$.job_id"
+            }
+          },
+          "UpdateExpression": "SET Queryed = :myValueRef",
+          "ExpressionAttributeValues": {
+            ":myValueRef": {
+              "N.$": "$.result"
+            }
+          }
+        },
+        "Next": "SendEmail",
+        "ResultPath": null
+      },
+      "SendEmail": {
+        "Type": "Task",
+        "Parameters": {
+          "Destination": {
+            "ToAddresses": [
+              "isaaccunharosa@gmail.com"
+            ]
+          },
+          "Message": {
+            "Body": {
+              "Text": {
+                "Data.$": "$.result"
+              }
+            },
+            "Subject": {
+              "Data": "GHA Events in the last hour (UTC time)"
+            }
+          },
+          "Source": "isaaccunharosa@outlook.com"
+        },
+        "Resource": "arn:aws:states:::aws-sdk:ses:sendEmail",
+        "End": true
+      },
+      "GHA Ingest": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:911469851726:function:GHA-to-S3-ingest-lambda:$LATEST"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 2,
+            "MaxAttempts": 6,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Convert to Parquet"
+      },
+      "Convert to Parquet": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "FunctionName": "arn:aws:lambda:us-east-1:911469851726:function:Json_to_parquet:$LATEST",
+          "Payload.$": "$"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 2,
+            "MaxAttempts": 6,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Register conversion"
+      },
+      "Register conversion": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::dynamodb:updateItem",
+        "Parameters": {
+          "TableName": "jobs",
+          "Key": {
+            "job_id": {
+              "N.$": "$.job_id"
+            }
+          },
+          "UpdateExpression": "SET Parquet = :myValueRef",
+          "ExpressionAttributeValues": {
+            ":myValueRef": {
+              "S": "Y"
+            }
+          }
+        },
+        "Next": "Read tables from parquet",
+        "ResultPath": null
+      },
+      "Read tables from parquet": {
+        "Type": "Task",
+        "Next": "GetCrawler",
+        "Parameters": {
+          "Name": "GHA-craw"
+        },
+        "Resource": "arn:aws:states:::aws-sdk:glue:startCrawler",
+        "ResultPath": null
+      },
+      "GetCrawler": {
+        "Type": "Task",
+        "Next": "Choice",
+        "Parameters": {
+          "Name": "GHA-craw"
+        },
+        "Resource": "arn:aws:states:::aws-sdk:glue:getCrawler",
+        "ResultPath": "$.crawler"
+      },
+      "Choice": {
+        "Type": "Choice",
+        "Choices": [
+          {
+            "Variable": "$.crawler.Crawler.State",
+            "StringEquals": "RUNNING",
+            "Next": "Wait"
+          }
+        ],
+        "Default": "Athena Query"
+      },
+      "Wait": {
+        "Type": "Wait",
+        "Seconds": 60,
+        "Next": "GetCrawler"
+      },
+      "Athena Query": {
+        "Type": "Task",
+        "Resource": "arn:aws:states:::lambda:invoke",
+        "OutputPath": "$.Payload",
+        "Parameters": {
+          "Payload.$": "$",
+          "FunctionName": "arn:aws:lambda:us-east-1:911469851726:function:Athena_GHA_query:$LATEST"
+        },
+        "Retry": [
+          {
+            "ErrorEquals": [
+              "Lambda.ServiceException",
+              "Lambda.AWSLambdaException",
+              "Lambda.SdkClientException",
+              "Lambda.TooManyRequestsException"
+            ],
+            "IntervalSeconds": 2,
+            "MaxAttempts": 6,
+            "BackoffRate": 2
+          }
+        ],
+        "Next": "Register Query"
+      }
+    }
+  }

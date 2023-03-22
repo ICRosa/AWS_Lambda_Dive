@@ -1,0 +1,1 @@
+Em uma conta AWS teste será nessessario registrar um email emissor e o receptor mas em uma conta comercial apenas o emissor
