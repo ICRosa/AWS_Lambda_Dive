@@ -1,4 +1,13 @@
-## AWS_Lambda_Dive
+<div align="center">
+  
+  ![GitHub release (latest by date)](https://img.shields.io/github/v/release/ICRosa/AWS_Lambda_Dive?color=purple)
+  ![GitHub Last Commit](https://img.shields.io/github/last-commit/ICRosa/AWS_Lambda_Dive?color=purple)
+  
+</div>
+
+## AWS_Lambda_Dive :swimming_man:
+
+This is a project that uses terraform to deploy a application that runs 
 
 - [Utilities and Advantages](#utilities-and-advantages)
 - [Terraform apply](#terraform-apply)
@@ -9,7 +18,7 @@
 
 ---
 
-## Utilities and Advantages
+## Utilities and Advantages 🛠️ 
 
 - It's a modifiable ETL workflow builded to GitHub activity data  
 
@@ -24,11 +33,11 @@
 ---
 
 Pipeline Diagram
+
 <img src="./Diagrams/GHA Analisis Pipeline.jpg">
 
-</div>
 
-## Terraform apply
+## Terraform apply :purple_circle:
 
 Don't forget to run "*terraform init*" to set the provider and modules
 
@@ -36,19 +45,21 @@ Run Terraform on workspace "dev" to auto change the endpoints to [localstack](#w
 
 ---
 
-## Terraform level, noted issues
+## Terraform level, noted issues :notebook:
 
 SES varification for non enterprise account seems to fail due to the need of an email verification.
 
 ---
 
-## Localstack deploy level, noted issues
+## Localstack deploy level, noted issues :blue_book:
 
 Glue tends to have a issue when creating a database, you can work around this by creating a database with awscli and runining terraform with the *"aws_glue_catalog_database"* commented when testing.
 
 Also lambda layers system doesn't work well in [localstack](#what-is-localstack) community version but you can also upload the dependencies with the function
 
-## What is Localstack
+---
+
+## What is Localstack :cloud:
 
 Localstack is a localy emulated AWS cloud where you can freely use your computer processing to test your aplications to get further informations you can access [their git](https://github.com/localstack/localstack) or [their official page](https://localstack.cloud/).
 
@@ -56,8 +67,7 @@ Localstack is a localy emulated AWS cloud where you can freely use your computer
 
 </div>
 
----
-To do:
+:receipt: Planning to do:
 
 - Improve ETL process with spark
 - Give specific IAM roles to resources
