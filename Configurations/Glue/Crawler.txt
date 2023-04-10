@@ -1,3 +1,0 @@
-Criar database
-
-Criar crawler para ler S3 com os arquivos parquetem um database

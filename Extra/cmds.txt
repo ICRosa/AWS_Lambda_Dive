@@ -1,0 +1,5 @@
+#lança container via docker run
+docker run  -p 4566:4566 -p 4571:4571 -p 4510-4559:4510-4559  -v "/var/run/docker.sock:/var/run/docker.sock" --name loving_hugle localstack/localstack
+
+#Invoca lambda com retorno limpo
+echo $(aws --endpoint-url=http://localhost:4566  lambda invoke --function-name lamb_name  out --log-type Tail --query 'LogResult' --output text) | base64 -d
