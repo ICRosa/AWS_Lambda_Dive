@@ -1,6 +1,13 @@
 
+#Environment vars
+variable "env_tags" {
+  type = map(string)
+  default = {}
+}
+
 variable "buckets_names" {
     type = list(string)
+    description = "Buckets to be created"
 }
 
 variable "proj_name" {
@@ -10,18 +17,15 @@ variable "proj_name" {
 
 ///
 
-
+#Create Buckets
 resource "aws_s3_bucket" "buckets_GHA" {
     count = length(var.buckets_names)
     bucket = "${var.proj_name}-${var.buckets_names[count.index]}-${terraform.workspace}"
 
 
-    #force destroy means that "terraform destroy" will be allowed to destroyt the buckets
+    #force destroy means that "terraform destroy" will be allowed to destroy the buckets
     force_destroy = true
-        tags = {
-          project = "${var.proj_name}"
-          environment = "${terraform.workspace}"
-        }
+        tags = var.env_tags
   }
 
   resource "aws_s3_bucket_acl" "bucket_acl" {
@@ -44,7 +48,7 @@ resource "aws_s3_bucket_public_access_block" "public_access_block" {
 
 ///
 
-
+#Outputs a dict with the input names as key and the actual names as value
 output "buckets" {
   value = {
       for x in var.buckets_names : x => aws_s3_bucket.buckets_GHA[index(var.buckets_names, x)].bucket

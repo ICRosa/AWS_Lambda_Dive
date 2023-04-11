@@ -1,9 +1,10 @@
 
-
+#Params to create the schedule like:
 variable "schedule" {
   type = map(map(string))
 }
 
+#Environment vars
 variable "env_tags" {
   type = map(string)
   default = {}
@@ -20,6 +21,7 @@ resource "aws_cloudwatch_event_rule" "rules" {
   name = "${each.key}_${terraform.workspace}"
   role_arn = try(each.value["role_arn"], "sheduler needs a target role arn")
   schedule_expression = try(each.value["schedule_expression"], "rate(2 days)")
+  tags = var.env_tags
 }
 
 resource "aws_cloudwatch_event_target" "match" {

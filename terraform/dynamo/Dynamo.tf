@@ -1,3 +1,12 @@
+
+#Environment vars
+variable "env_tags" {
+  type = map(string)
+  default = {}
+}
+
+///
+
 resource "aws_dynamodb_table" "jobs" {
   name           = "jobs"
   hash_key       = "job_id"
@@ -7,4 +16,6 @@ resource "aws_dynamodb_table" "jobs" {
     name = "job_id"
     type = "N"
   }
+
+  tags = var.env_tags
 }

@@ -24,4 +24,6 @@ resource "aws_glue_crawler" "gha_crawler" {
     path = "s3://${var.params["bucket_target"]}"
   }
 
+  tags = var.env_tags
+
 }

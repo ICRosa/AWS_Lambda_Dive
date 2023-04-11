@@ -27,7 +27,7 @@
       "Parameters": {
         "Destination": {
           "ToAddresses": [
-            "isaaccunharosa@gmail.com"
+            "${destiny}"
           ]
         },
         "Message": {
@@ -40,7 +40,7 @@
             "Data": "GHA Events in the last hour (UTC time)"
           }
         },
-        "Source": "isaaccunharosa@outlook.com"
+        "Source": "${domain}"
       },
       "Resource": "arn:aws:states:::aws-sdk:ses:sendEmail",
       "End": true
