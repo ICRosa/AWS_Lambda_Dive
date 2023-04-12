@@ -83,7 +83,7 @@ terraform init
 ```cmd
 terraform workspace new dev
 ```
-    Changing workspace to "dev" may set the endpoints to localstack
+Changing workspace to "dev" may set the endpoints to localstack
 
   4.4. Run *terraform apply* using your credentials 
 
@@ -102,6 +102,7 @@ var.secret_key
 ```
 # 5. Set tfvars
   If  you don't want to put your credentials every time you run *terraform apply* you can put then in _terraform.tfvars_ as indicated in the commented part of this file.
+
 
 
 Run Terraform on workspace "dev" to auto change the endpoints to [localstack](#what-is-localstack) any other workspace name points to default aws us-east-1
