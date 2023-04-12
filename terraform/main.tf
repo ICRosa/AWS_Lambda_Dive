@@ -50,7 +50,9 @@ module "lambdas" {
 
 
   # Map to create multiple lambda functions with custom parameters:
-  /* timeout, reserved_concurrent_executions, memory_size, role, layer*/
+  /* 
+    timeout, reserved_concurrent_executions, memory_size, role and/or layer
+  */
 
   lambdas = {
     GHA_to_S3_ingest_lambda = {
