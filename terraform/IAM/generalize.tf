@@ -45,7 +45,7 @@ resource "aws_iam_role" "general" {
 
 }
 
-#Output the Roles arns
+#Output the Roles arns by the input name
 output "arns" {
     value = {
         for x, y in var.needs_an_role : x => "${aws_iam_role.general[x].arn}"

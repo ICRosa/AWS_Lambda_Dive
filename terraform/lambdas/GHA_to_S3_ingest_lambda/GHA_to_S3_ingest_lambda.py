@@ -1,43 +1,47 @@
 '''
-Essa função faz um request de dados de uma URL ('https://data.gharchive.org/{file_name}'), carrega em um S3 e 
-registra o processo em uma tabela Dynamo
+This function makes a request for data from a URL ('https://data.gharchive.org/{file_name}'), loads it into an S3 bucket, and registers the process in a DynamoDB table.
 
-• Requer layer AWSSDKPandas-Python39 ou ▼
-    • requests e pytz
+• Requires AWSSDKPandas-Python39 layer or ▼
+    • requests and pytz
+
 
 '''
+# Importing necessary modules
 import boto3
 import requests
 from datetime import datetime, timedelta
 import os
 import pytz
 
-
+# Get the target bucket name from environment variable
 bucket_name = os.getenv('target_bucket')
 
+# Lambda handler function
 def lambda_handler(event, context):
     
+    # Print the bucket name
     print(bucket_name)
 
-    #Definindo variaveis gerais
-    tz = pytz.timezone('UTC') #Garante a timezone UTC
+    #Defining general variables
+    tz = pytz.timezone('UTC') # Setting timezone to UTC
     if os.name == 'nt':
+        # Windows OS
         time_string = datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y-%m-%d-%#H")
         job_id = int(datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y%m%d%H"))
     else:
+        # Unix-based OS
         time_string = datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y-%m-%d-%-H")
         job_id = int(datetime.strftime(datetime.now(tz=tz) - timedelta(hours=1), "%Y%m%d%H"))
-
 
     file_name = f'{time_string}.json.gz'
     
 
-    #Função coleta da fonte 
-    def colect():
+    # Function to collect data from source
+    def collect():
         arch = requests.get(f'https://data.gharchive.org/{file_name}')
         return arch
 
-    #Função Ingere no S3 *bucket_name*
+    # Function to ingest data into S3 bucket
     def ingest():
         s3_client = boto3.client('s3')
         upload_res = s3_client.put_object(
@@ -47,7 +51,7 @@ def lambda_handler(event, context):
         )
         return upload_res
         
-    #Função Registra na tabela "jobs" do Dynamo   
+    # Function to register job details in DynamoDB table "jobs"   
     def register():
         jobs_table = boto3.resource('dynamodb', 'us-east-1').Table('jobs')
         jobs_table.put_item(
@@ -59,10 +63,17 @@ def lambda_handler(event, context):
                 'processed_file_name': file_name
              }})
 
-    arch = colect()
+    # Call the collect, ingest and register functions
+    arch = collect()
     upload_res = ingest()
     register()
 
+    # Returns a dictionary containing the following information:
+    # - job_id: a string representation of the job ID
+    # - Bucket: the target S3 bucket name
+    # - Key: the S3 bucket key for the uploaded file
+    # - time_string: a string representation of the time at which the job ran
+    # - status_code: the HTTP status code of the S3 object upload operation
     return {
       'job_id': f"{job_id}",
       'Bucket': bucket_name,

@@ -9,8 +9,8 @@ terraform {
 
 provider "aws" {
   region = "us-east-1"
-  access_key = "acces_key"
-  secret_key = "secret_key"
+  access_key = "${var.acces_key}"
+  secret_key = "${var.secret_key}"
   s3_use_path_style           = ("${terraform.workspace}" == "dev") ? true : null
   skip_credentials_validation = ("${terraform.workspace}" == "dev") ? true : null
   skip_metadata_api_check     = ("${terraform.workspace}" == "dev") ? true : null

@@ -1,5 +1,7 @@
-terraform/.terraform/
-
 terraform/terraform.tfstate.d
 
 **/python
+
+Configurations/
+
+terraform/.terraform*

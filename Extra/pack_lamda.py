@@ -1,10 +1,10 @@
 '''
-Essa função carrega um .zip para criação de um layer contendo os pacotes listados (com espaço) em {pack_names}
+This function loads a .zip file to create a layer containing the packages listed (with spaces) in {pack_names}.
 
-exemplo:
-    pack_names = "fastparquet requests boto3"
+Example:
+pack_names = "fastparquet requests boto3"
 
-• Não requer dependencias não standard de funções lambda
+• It does not require non-standard dependencies for lambda functions.
 '''
 
 import os
@@ -13,27 +13,26 @@ import shutil
 
 def lambda_handler(event, context):
     
-    #nome do pacote
+    # name of the package
     pack_names = "fastparquet"
     
-    #Nome do bucket destino
-    pack_bucket = 'meuslambdalayers'
+    # name of the destination bucket
+    pack_bucket = 'lamblayers'
     
-    #cria diretorio a ser zipado
+    # create directory to be zipped
     os.system("mkdir -p /tmp/layer/python")
     
-    #comando pip
+    # pip command
     os.system(f"python -m pip install {pack_names} -t /tmp/layer/python")
     
-    #cria nome sem espaços para arquivo
+    # create name without spaces for file
     zip_name = pack_names.replace(" ", "_")
     
-    #zip e upload dos pacotes para S3
+    # zip and upload packages to S3
     s3_client = boto3.client('s3')
     s3_client.upload_file(shutil.make_archive('/tmp/layeronlamb', 'zip', '/tmp/layer'), pack_bucket, f'{zip_name}.zip')
     
-    
-    #Retorno
+    # return
     return {
         'statusCode': 200,
         'body': f"Check your bucket {pack_bucket} for {zip_name}.zip"

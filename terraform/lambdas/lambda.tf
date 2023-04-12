@@ -1,5 +1,5 @@
 
-
+# Zip the directory with the *same name* of the lambda to be upoloaded
 data "archive_file" "python_lambda_package" {  
   for_each = var.lambdas
   type = "zip"  
@@ -7,7 +7,7 @@ data "archive_file" "python_lambda_package" {
   output_path = "${path.module}/${each.key}/${each.key}.zip"
 }
 
-
+#Create the lambda with the params passed to var.lambdas map
 resource "aws_lambda_function" "lambdas" {
 
   for_each = var.lambdas
@@ -27,5 +27,5 @@ resource "aws_lambda_function" "lambdas" {
     variables = try(yamldecode(each.value["environment"]), null)
   }
 
-  tags = merge({env = "${terraform.workspace}", "Terraform" = true}, try(yamldecode(each.value["tags"]), null))
+  tags = var.env_tags
 }

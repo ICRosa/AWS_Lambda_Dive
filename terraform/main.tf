@@ -11,7 +11,7 @@ locals {
 module "buckets" {
   source = "./buckets/"
 
-  buckets_names = var.buckets_names
+  buckets_names = ["raw","processed", "curated", "lamblayers"]
   proj_name     = var.proj_name
 }
 
@@ -20,6 +20,7 @@ module "buckets" {
 module "IAM" {
   source = "./IAM/"
 
+  #Value corresponds to a json containing the policy in ./IAM/policies/ 
   needs_an_role = {
     "gha_sheduler"            = "adm"
     "GHA_Activity_SFN"        = "adm"
@@ -47,6 +48,12 @@ module "layers" {
 module "lambdas" {
   source = "./lambdas/"
 
+
+  # Map to create multiple lambda functions with custom parameters:
+  /* 
+    timeout, reserved_concurrent_executions, memory_size, role and/or layer
+  */
+
   lambdas = {
     GHA_to_S3_ingest_lambda = {
       role = module.IAM.arns["GHA_to_S3_ingest_lambda"], 
@@ -61,13 +68,13 @@ module "lambdas" {
       environment = "{target_bucket: ${module.buckets.buckets["processed"]}}",
       layer = "pandas, fspec_s3fs",
       timeout = 80,
-      memory_size = 800
+      memory_size = 700
       },
 
     Athena_GHA_Query_Lambda = {
       role = module.IAM.arns["Athena_GHA_Query_Lambda"]
       environment = "{target_bucket: ${module.buckets.buckets["curated"]}}",
-      timeout = 80
+      timeout = 30
       }
   }
 
@@ -93,7 +100,10 @@ module "stepfunctions" {
       role_arn = module.IAM.arns["GHA_Activity_SFN"]
     }}
 
+
+  emails = var.emails
   lambdas = module.lambdas.arns
+  
 
   depends_on = [
     module.IAM
@@ -119,7 +129,7 @@ module "cloudwatch" {
 
   schedule = {
     GHA_hourly = {
-        schedule_expression = "cron(0 * * * ? *)"
+        schedule_expression = "cron(15 * * * ? *)" #Every hour at minut 15th minute
         target_arn = module.stepfunctions.sfn_arns["GHA_Activity_SFN_${terraform.workspace}"]
         role_arn = module.IAM.arns["gha_sheduler"]
     }
@@ -129,11 +139,15 @@ module "cloudwatch" {
     module.stepfunctions,
     module.IAM
   ]
+
+  env_tags = local.env_tags
 }
 
 #SES
 module "SES" {
   source = "./SES/"
+
+  emails = var.emails
 }
 
 #Athena
