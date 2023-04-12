@@ -37,13 +37,13 @@ Pipeline Diagram
 <img src="./Diagrams/GHA Analisis Pipeline.jpg">
 
 
-## Terraform config :purple_circle:
+## Config :purple_circle:
 
 # There are a fell steps to run this environment:
 
-# 1. Clone this repository. [Click here](https://github.com/ICRosa/AWS_Lambda_Dive/archive/refs/heads/main.zip)
+1. Clone this repository. [Click here](https://github.com/ICRosa/AWS_Lambda_Dive/archive/refs/heads/main.zip)
 
-# 2. Install terraform
+2. Install terraform
 
   In windows using [Chocolatey](https://chocolatey.org/install)
   ```cmd
@@ -58,7 +58,7 @@ Pipeline Diagram
   sudo yum install terraform
   ```
 
-# 3. Install and run Docker (If you wanna try localstack)
+3. Install and run Docker (If you wanna try localstack)
 
   - [Windows](https://docs.docker.com/desktop/install/windows-install/)
 
@@ -69,7 +69,7 @@ Pipeline Diagram
   ```
 
 
-# 4. Configure Terraform
+4. Configure Terraform
 
   4.1. Open a terminal in ./terraform dir of this repository
 
@@ -100,7 +100,7 @@ var.secret_key
 
   Enter a value: <your_secret_key>
 ```
-# 5. Set tfvars
+5. Set tfvars
   If  you don't want to put your credentials every time you run *terraform apply* you can put then in _terraform.tfvars_ as indicated in the commented part of this file.
 
 
