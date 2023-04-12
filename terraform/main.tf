@@ -127,7 +127,7 @@ module "cloudwatch" {
 
   schedule = {
     GHA_hourly = {
-        schedule_expression = "cron(0 * * * ? *)"
+        schedule_expression = "cron(15 * * * ? *)" #Every hour at minut 15th minute
         target_arn = module.stepfunctions.sfn_arns["GHA_Activity_SFN_${terraform.workspace}"]
         role_arn = module.IAM.arns["gha_sheduler"]
     }

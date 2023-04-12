@@ -20,15 +20,15 @@ This is a project that uses terraform to deploy a application that runs
 
 ## Utilities and Advantages 🛠️ 
 
-- It's a modifiable ETL workflow builded to GitHub activity data  
+- It's a modifiable ETL workflow built to GitHub activity data  
 
 - The whole process is conected to a scheduled state machine
 
-- Free testing most of the deployng process with [localstack](#what-is-localstack)
+- Free testing of most of the deploying process with [localstack](#what-is-localstack) community
 
 - Easy and fast to deploy use and destroy with Terraform
 
-- Mostly the code allow you to change and scale drastically the code only by edditing the *main.tf* and the *terraform.tfvars* 
+- Mostly the code allows you to change and scale the code drastically only by edditing the *main.tf* and the *terraform.tfvars* 
 
 ---
 
@@ -37,35 +37,92 @@ Pipeline Diagram
 <img src="./Diagrams/GHA Analisis Pipeline.jpg">
 
 
-## Terraform apply :purple_circle:
+## Terraform config :purple_circle:
 
-Don't forget to run "*terraform init*" to set the provider and modules
+#There are a fell steps to run this environment:
 
-Run Terraform on workspace "dev" to auto change the endpoints to [localstack](#what-is-localstack) 
+1. Clone this repository. [Click here](https://github.com/ICRosa/AWS_Lambda_Dive/archive/refs/heads/main.zip)
+
+2. Install terraform
+
+  In windows using [Chocolatey](https://chocolatey.org/install)
+  ```cmd
+  choco install terraform
+  ```
+
+  Or in linux using either apt-get or yum
+  ```cmd
+  sudo apt-get install terraform
+  ```
+  ```cmd
+  sudo yum install terraform
+  ```
+
+3. Install and run Docker (If you wanna try localstack)
+
+  - [Windows](https://docs.docker.com/desktop/install/windows-install/)
+
+  - [linux](https://docs.docker.com/engine/install/ubuntu/)
+
+  ```cmd
+  docker run  -p 4566:4566 -p 4571:4571 -p 4510-4559:4510-4559  -v "/var/run/docker.sock:/var/run/docker.sock" --name localstack_main localstack/localstack
+  ```
+
+
+4. Configure Terraform
+
+  1. Open a terminal in ./terraform dir of this repository
+
+  2. Init terraform modules and provider
+    ```cmd
+    terraform init
+    ```
+  3. (Optional) Set the workspace to "dev"
+    ```cmd
+    terraform workspace new dev
+    ```
+    Changing workspace to "dev" may set the endpoints to localstack
+
+  4. Run *terraform apply* using your credentials 
+
+    ```cmd
+    terraform plan
+
+    var.acces_key
+      your AWS acces_key
+
+      Enter a value: <your_access_key>
+
+    var.secret_key
+      your AWS secret_key
+
+      Enter a value: <your_secret_key>
+    ```
+  5. If  you don't want to put your credentials every time you run *terraform apply* you can put then in _terraform.tfvars_ as indicated in the commented part of this file.
+
+
+Run Terraform on workspace "dev" to auto change the endpoints to [localstack](#what-is-localstack) any other workspace name points to default aws us-east-1
 
 ---
 
 ## Terraform level, noted issues :notebook:
 
-SES varification for non enterprise account seems to fail due to the need of an email verification.
+SES varification for non enterprise account seems to fail due to the need of an email verification. (Just verify the email before running the state machine and it will work)
 
 ---
 
 ## Localstack deploy level, noted issues :blue_book:
 
-Glue tends to have a issue when creating a database, you can work around this by creating a database with awscli and runining terraform with the *"aws_glue_catalog_database"* commented when testing.
-
-Also lambda layers system doesn't work well in [localstack](#what-is-localstack) community version but you can also upload the dependencies with the function
+I used [localstack](#what-is-localstack) pro to test lambda layers properly, you can also deploy your lambda dependencies with the function to keep using only the communnity version
 
 ---
 
 ## What is Localstack :cloud:
 
-Localstack is a localy emulated AWS cloud where you can freely use your computer processing to test your aplications to get further informations you can access [their git](https://github.com/localstack/localstack) or [their official page](https://localstack.cloud/).
+Localstack is a locally emulated AWS cloud where you can freely use your computer processing to test your aplications, to get further informations you can access [their git](https://github.com/localstack/localstack) or [their official page](https://localstack.cloud/).
 
 ---
 
-</div>
 
 :receipt: Planning to do:
 
