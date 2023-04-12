@@ -74,30 +74,32 @@ Pipeline Diagram
   4.1. Open a terminal in ./terraform dir of this repository
 
   4.2. Init terraform modules and provider
-    ```cmd
-    terraform init
-    ```
+
+```cmd
+terraform init
+```
   4.3. (Optional) Set the workspace to "dev"
-    ```cmd
-    terraform workspace new dev
-    ```
+
+```cmd
+terraform workspace new dev
+```
     Changing workspace to "dev" may set the endpoints to localstack
 
   4.4. Run *terraform apply* using your credentials 
 
-    ```cmd
-    terraform plan
+```cmd
+terraform plan
 
-    var.acces_key
-      your AWS acces_key
+var.acces_key
+  your AWS acces_key
 
-      Enter a value: <your_access_key>
+  Enter a value: <your_access_key>
 
-    var.secret_key
-      your AWS secret_key
+var.secret_key
+  your AWS secret_key
 
-      Enter a value: <your_secret_key>
-    ```
+  Enter a value: <your_secret_key>
+```
 # 5. Set tfvars
   If  you don't want to put your credentials every time you run *terraform apply* you can put then in _terraform.tfvars_ as indicated in the commented part of this file.
 
