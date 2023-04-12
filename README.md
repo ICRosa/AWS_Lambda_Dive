@@ -9,11 +9,11 @@
 
 This is a project that uses terraform to deploy a application that runs 
 
-- [Utilities and Advantages](#utilities-and-advantages)
-- [Terraform apply](#terraform-apply)
-- [Terraform level, noted issues](#terraform-level-noted-issues)
-- [Localstack deploy level, noted issues](#localstack-deploy-level-noted-issues)
-- [Localstack](#what-is-localstack)
+- [Utilities and Advantages](#utilities-and-advantages-🛠️)
+- [Terraform Config](#terraform-config-purple_circle)
+- [Terraform level, noted issues](#terraform-level-noted-issues-notebook)
+- [Localstack deploy level, noted issues](#localstack-deploy-level-noted-issues-blue_book)
+- [Localstack](#what-is-localstack-cloud)
 
 
 ---
@@ -88,7 +88,7 @@ Changing workspace to "dev" may set the endpoints to localstack
   4.4. Run *terraform apply* using your credentials 
 
 ```cmd
-terraform plan
+terraform apply
 
 var.acces_key
   your AWS acces_key
